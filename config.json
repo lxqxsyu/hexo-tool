@@ -8,7 +8,7 @@
     "img_jpg_qulity" : "75%",
     "copy_repository" :  "/home/shuihan/Documents/dp2px.com",
     "qshell_path" : "/home/shuihan/Documents/python/hexo-tool",
-    "qiniu_ak" : "nzt90pr6nkba0dG1TD2oMul0XHBe6ALuBo3hHc_l",
-    "qiniu_sk" : "yoRI0b8J9dDiYwtJeE844tYbrupdjSiVio6sczf1",
+    "qiniu_ak" : "你的七牛AccessKey",
+    "qiniu_sk" : "你的七牛SecretKey",
     "qiniu_bucket" : "dp2px"     
 }
