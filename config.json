@@ -1,0 +1,14 @@
+{
+    "title" : "博客发布系统",
+    "blog_dir" : "/home/shuihan/Documents/dp2px.local",
+    "post_dir" : "/home/shuihan/Documents/dp2px.local/source/_posts",
+    "drafts_dir" : "/home/shuihan/Documents/dp2px.local/source/_drafts",
+    "default_image_path" : "/home/shuihan/Desktop",
+    "img_max_width": 800,
+    "img_jpg_qulity" : "75%",
+    "copy_repository" :  "/home/shuihan/Documents/dp2px.com",
+    "qshell_path" : "/home/shuihan/Documents/python/hexo-tool",
+    "qiniu_ak" : "nzt90pr6nkba0dG1TD2oMul0XHBe6ALuBo3hHc_l",
+    "qiniu_sk" : "yoRI0b8J9dDiYwtJeE844tYbrupdjSiVio6sczf1",
+    "qiniu_bucket" : "dp2px"     
+}
