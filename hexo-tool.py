@@ -10,7 +10,7 @@ import subprocess as shell
 
 window = tk.Tk()
 
-with open(r'../python/config.json') as load_f:
+with open(r'../hexo-tool/config.json') as load_f:
         global config_json
         config_json = json.load(load_f, encoding='utf-8')
 
@@ -36,6 +36,14 @@ def parse_folder(dir_path):
 var_image_path = tk.StringVar(None, '当前图片目录：' + parse_folder(post_dir), None)  #文字变量存储器
 var_image_num = tk.StringVar(None, '请选择...', None)  #当前目录图片数量
 
+def shell_command(cmd):
+    shell_console.insert('insert', '\n' + cmd) 
+    output = shell.Popen(cmd, stdout=shell.PIPE, shell=True)
+    for line in output.stdout:
+        shell_console.insert('insert', '\n' + line.rstrip())
+    #output.stdout.close()
+    output.communicate()
+
 def folder_file_num(dir_path):
     count = 0
     for root,dirs,files in os.walk(dir_path):    #遍历统计
@@ -58,30 +66,27 @@ def new_post():
     if inputt == '':
         shell_console.insert('insert', '\n请在最底下输入框输入要创建的文件名（不要后缀.md)')
         return
-    output = shell.Popen('cd ' + config_json.get('blog_dir') + ' && hexo new ' + inputt, stdout=shell.PIPE, shell=True).communicate()
-    shell_console.insert('insert', output[0])
-    #shell.call(['ls', '-l']) 
+    np = 'cd ' + config_json.get('blog_dir') + ' && hexo new ' + inputt
+    shell_command(np)
 def new_drafts():
     inputt = input_text.get()
     if inputt == '':
         shell_console.insert('insert', '\n请在最底下输入框输入要创建的文件名（不要后缀.md)')
         return
-    output = shell.Popen('cd ' + config_json.get('blog_dir') + ' && hexo new draft ' + inputt, stdout=shell.PIPE, shell=True).communicate()
-    shell_console.insert('insert', output[0])
+    nd = 'cd ' + config_json.get('blog_dir') + ' && hexo new draft ' + inputt
+    shell_command(nd)
 
 def local_publish():
     lp = 'cd ' + config_json.get('blog_dir') + ' && hexo server'
-    shell_console.insert('insert', lp)
-    output = shell.Popen(lp, stdout=shell.PIPE, shell=True).communicate()
-    #shell_console.insert('insert', output[0])
+    shell_command(lp)
 
 def drafts_to_post():
     inputt = input_text.get()
     if inputt == '':
         shell_console.insert('insert', '\n请在最底下输入框输入草稿文件名（不要后缀.md)')
         return
-    output = shell.Popen('cd ' + config_json.get('blog_dir') + ' && hexo publish ' + inputt , stdout=shell.PIPE, shell=True).communicate()
-    shell_console.insert('insert', output[0])
+    dtp = 'cd ' + config_json.get('blog_dir') + ' && hexo publish ' + inputt
+    shell_command(dtp)
 
 def post_to_drafts():
     inputt = input_text.get()
@@ -90,10 +95,8 @@ def post_to_drafts():
         return
     cp = 'mv -f ' + config_json.get('post_dir') + '/' + inputt + ' ' + config_json.get('drafts_dir') + '/' + inputt
     cpmd = 'mv ' + config_json.get('post_dir') + '/' + inputt + '.md ' + config_json.get('drafts_dir') + '/' + inputt + '.md'
-    shell_console.insert('insert', '\n' + cp)
-    shell_console.insert('insert', '\n' + cpmd)
-    output = shell.Popen(cp, stdout=shell.PIPE, shell=True).communicate()
-    output = shell.Popen(cpmd, stdout=shell.PIPE, shell=True).communicate()
+    shell_command(cp)
+    shell_command(cpmd)
 
 def delete_drafts():
     inputt = input_text.get()
@@ -102,10 +105,8 @@ def delete_drafts():
         return
     rm = 'rm -rf ' + config_json.get('drafts_dir') + '/' + inputt
     rmmd = 'rm ' + config_json.get('drafts_dir') + '/' + inputt + '.md'
-    shell_console.insert('insert', '\n' + rm)
-    shell_console.insert('insert', '\n' + rmmd)
-    output = shell.Popen(rm, stdout=shell.PIPE, shell=True).communicate()
-    output = shell.Popen(rmmd, stdout=shell.PIPE, shell=True).communicate()
+    shell_command(rm)
+    shell_command(rmmd)
 
 def local_stop():
     print('stop server')
@@ -125,30 +126,18 @@ def upload_image():
     if img_file.endswith(s_png) or img_file.endswith(s_jpg) or img_file.endswith(s_jpeg) or img_file.endswith(s_gif):
         if img_file.endswith(s_png) or img_file.endswith(s_jpg) or img_file.endswith(s_jpeg):
             cs = 'convert -resize "' + str(config_json.get('img_max_width')) + ' >" ' + img_file + ' ' + img_file
-            shell_console.insert('insert', '\n' + cs)
-            output = shell.Popen(cs, stdout=shell.PIPE, shell=True).communicate()
+            shell_command(cs)
 
         if img_file.endswith(s_jpg) or img_file.endswith(s_jpeg):
             qs = 'convert -quality ' +  config_json.get('img_jpg_qulity') + ' ' + img_file + ' ' + img_file
-            shell_console.insert('insert', '\n' + qs)
-            output = shell.Popen(qs, stdout=shell.PIPE, shell=True).communicate()
+            shell_command(qs)
 
         ss = 'cp ' + img_file + ' ' + current_image_dir + '/image' + str(folder_file_num(current_image_dir) + 1) + os.path.splitext(img_file)[1]
-        shell_console.insert('insert', '\n' + ss)
-        output = shell.Popen(ss, stdout=shell.PIPE, shell=True).communicate()
-        shell_console.insert('insert', output[0])
+        shell_command(ss)
         var_image_num.set('目录内图片数：' + str(folder_file_num(current_image_dir)))
 
     else:
         shell_console.insert('insert', '\n请选择图片文件(jpg、jpeg、gif、png)')
-
-def shell_command(cmd):
-    shell_console.insert('insert', '\n' + cmd) 
-    output = shell.Popen(cmd, stdout=shell.PIPE, shell=True)
-    for line in output.stdout:
-        shell_console.insert('insert', '\n' + line.rstrip())
-    #output.stdout.close()
-    output.communicate()
 
 def publishing():
     #备份文件
@@ -163,14 +152,12 @@ def publishing():
     sed_r = 'sed -i "s#img\ src=\\\"#&http://qiniucdn.dp2px.com/#g" `grep img\ src=\\\" -rl ' + config_json.get('copy_repository') + '/source/_posts`'
     shell_command(sed_r) 
     #压缩资源
-    press_res = 'cd ' + config_json.get('copy_repository') + ' && hexo glup'
+    press_res = 'cd ' + config_json.get('copy_repository') + ' && hexo g && gulp'
     shell_command(press_res)
     #git提交
     git_push = 'cd ' + config_json.get('copy_repository') + ' && git add . && git commit -m \"submit\" && git push'
-    shell_console.insert('insert', '\n' + git_push) 
-    #output = shell.Popen(git_push, stdout=shell.PIPE, shell=True).communicate()
-    #for line in iter(output.stdout.readline, b''):
-    #    shell_console.insert('insert', '\n' + line) 
+    #shell_console.insert('insert', '\n' + git_push) 
+    #shell_command(git_push)
 
 def init_menus():  #初始化菜单
     menubar = tk.Menu(window)
@@ -199,20 +186,20 @@ def init_menus():  #初始化菜单
     window.config(menu=menubar)
 
 def init_frame(): #初始化页面布局
-    frame_head = tk.Frame(bd=12, bg='red')
+    frame_head = tk.Frame(bd=12, bg='#F25652')
     frame_head.pack(side=tk.TOP, fill=tk.X, expand=False)
 
-    image_folder_label = tk.Label(frame_head, textvariable=var_image_path, font=('Arial', 12), width=30, height=2)
+    image_folder_label = tk.Label(frame_head, textvariable=var_image_path, bg='#F25652', foreground='#F1F0E2', font=('Arial', 12), width=30, height=2)
     image_folder_label.pack(side=tk.LEFT)
 
-    image_number = tk.Label(frame_head, textvariable=var_image_num, font=('Arial', 12), width=20, height=2)
+    image_number = tk.Label(frame_head, textvariable=var_image_num, bg='#F25652', foreground='#F1F0E2', font=('Arial', 12), width=20, height=2)
     image_number.pack(side=tk.RIGHT)
 
     global frame_footer
-    frame_footer = tk.Frame(bg='yellow', height=60)
+    frame_footer = tk.Frame(height=60, bg='#252526')
     frame_footer.pack(side=tk.BOTTOM, fill=tk.X, expand=False)
 
-    input_label = tk.Label(frame_footer, text='请输入文章名称：')
+    input_label = tk.Label(frame_footer, text='请输入文章名称：', bg='#252526', foreground='#F1F0E2')
     input_label.pack(side=tk.LEFT)
 
     global input_text
@@ -224,7 +211,7 @@ def init_frame(): #初始化页面布局
     global shell_console
     shell_scroll = tk.Scrollbar(frame_content)
     shell_scroll.pack(side=tk.RIGHT, fill=tk.Y)
-    shell_console = tk.Text(frame_content, bg='green', height=20)
+    shell_console = tk.Text(frame_content, bg='#3E4E59', foreground='#F1F0E2', height=20)
     shell_console.pack(fill=tk.BOTH)
     shell_scroll.config(command=shell_console.yview)
     shell_console.config(yscrollcommand=shell_scroll.set)
