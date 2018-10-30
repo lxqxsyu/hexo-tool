@@ -140,9 +140,14 @@ def upload_image():
         shell_console.insert('insert', '\n请选择图片文件(jpg、jpeg、gif、png)')
 
 def publishing():
+     #压缩资源
+    press_res = 'cd ' + config_json.get('blog_dir') + ' && hexo g && gulp'
+    shell_command(press_res)
     #备份文件
-    copy = 'rm -rf ' + config_json.get('copy_repository') + ' && cp -af ' + config_json.get('blog_dir') + ' ' + config_json.get('copy_repository')
-    shell_command(copy)
+    copy_pb = 'rm -rf ' + config_json.get('copy_repository') + '/public && cp -af ' + config_json.get('blog_dir') + '/public ' + config_json.get('copy_repository') + '/public'
+    copy_source =  'rm -rf ' + config_json.get('copy_repository') + '/source && cp -af ' + config_json.get('blog_dir') + '/source ' + config_json.get('copy_repository') + '/source'
+    shell_command(copy_pb)
+    shell_command(copy_source)
     #替换图片图床
     qshell_init = 'cd ' + config_json.get('qshell_path') + ' && qshell account ' + config_json.get('qiniu_ak') + ' ' + config_json.get('qiniu_sk')
     shell_command(qshell_init)
@@ -151,13 +156,10 @@ def publishing():
     #替换字符串
     sed_r = 'sed -i "s#img\ src=\\\"#&http://qiniucdn.dp2px.com/#g" `grep img\ src=\\\" -rl ' + config_json.get('copy_repository') + '/source/_posts`'
     shell_command(sed_r) 
-    #压缩资源
-    press_res = 'cd ' + config_json.get('copy_repository') + ' && hexo g && gulp'
-    shell_command(press_res)
     #git提交
     git_push = 'cd ' + config_json.get('copy_repository') + ' && git add . && git commit -m \"submit\" && git push'
-    #shell_console.insert('insert', '\n' + git_push) 
-    #shell_command(git_push)
+    shell_console.insert('insert', '\n' + git_push) 
+    shell_command(git_push)
 
 def init_menus():  #初始化菜单
     menubar = tk.Menu(window)
@@ -184,7 +186,7 @@ def init_menus():  #初始化菜单
     publishmenu.add_command(label='备份并发布', command=publishing)
 
     window.config(menu=menubar)
-
+    
 def init_frame(): #初始化页面布局
     frame_head = tk.Frame(bd=12, bg='#F25652')
     frame_head.pack(side=tk.TOP, fill=tk.X, expand=False)
